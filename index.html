@@ -262,8 +262,8 @@ const c = 30;   // block scoped, cannot be reassigned
   <p><strong>Differences:</strong></p>
   <ul>
     <li><b>var</b>: function scoped, hoisted, can be redeclared</li>
-    <li><b>let</b>: block scoped, not hoisted, cannot be redeclared in same block</li>
-    <li><b>const</b>: block scoped, must be initialized, cannot be reassigned</li>
+    <li><b>let</b>: block scoped, hoisted but in Temporal Dead Zone (TDZ), cannot be redeclared in same scope</li>
+    <li><b>const</b>: block scoped, hoisted but in TDZ, must be initialized, cannot be reassigned</li>
   </ul>
 </div>
 <br>
@@ -302,9 +302,11 @@ false + 1 // 1 (false becomes 0)
 
   <p><strong>Arithmetic:</strong> +, -, *, /, %</p>
   <p><strong>Comparison:</strong> ==, === always return boolean</p>
-  <p><strong>Logical:</strong> &&, ||, ! return boolean values</p>
-
+  <p><strong>Logical:</strong> &&, || return actual values (first falsy / last truthy), ! always returns boolean</p>
   <pre>
+5 && "hello" // "hello"
+0 && "hello" // 0
+
 5 == "5"   // true (loose equality, type coercion)  
 5 === "5"  // false (strict equality, different types)  
 true && false // false  
@@ -363,7 +365,7 @@ if (age >= 18) {
 
   <h3>Ternary Operator</h3>
   <pre>
-let result = age >= 18 ? "Adult" : "Minor";
+let result = age &gt;= 18 ? "Adult" : "Minor";
   </pre>
 
   <h3>Switch Case</h3>
@@ -516,7 +518,7 @@ obj.greet();
   <p><strong>Key Points:</strong></p>
   <ul>
     <li>In method (object) → this = the object</li>
-    <li>In regular function → this = window (global) object</li>
+    <li>Regular function → this = global object (non-strict), undefined (strict mode / ES modules)</li>
     <li>Arrow functions → inherit this from parent scope (lexical this)</li>
   </ul>
 </div>
@@ -707,7 +709,8 @@ const result = Object.assign(obj1, obj2); // { a: 1, b: 2 }
   </pre>
 
   <h3>Object.freeze()</h3>
-  <p>Prevents changes to object (makes it immutable)</p>
+  <p>Prevents changes to top-level properties (shallow immutability)</p>
+  <p>Nested objects can still be modified</p>
   <pre>
 Object.freeze(user);
 user.name = "New"; // will NOT change
@@ -757,7 +760,7 @@ const copy = { ...user }; // modifying copy.nestedObj affects original
 
   <p><b>Deep Copy</b> → creates completely independent copy with new references</p>
   <pre>
-const deepCopy = JSON.parse(JSON.stringify(user)); // completely independent
+const deepCopy = structuredClone(user); // safely creates a complete independent copy
   </pre>
 </div>
 <br>
