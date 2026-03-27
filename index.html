@@ -56,16 +56,16 @@
 <div class="card">
   <h2>1. What is JavaScript?</h2>
   <p>
-    JavaScript is a low-level, static, multi-threaded programming language
-    used mainly for designing the structure of web pages. It runs only inside browsers.
+    JavaScript is a high-level, dynamic, single-threaded, interpreted language with JIT compilation.
+    Used mainly for adding interactivity and behavior to web pages. It runs in browsers and servers (Node.js).
   </p>
 
   <p><b>Key Points:</b></p>
   <ul>
-    <li>Low-level (hard to read and write)</li>
-    <li>Fully compiled language</li>
-    <li>Not event-driven</li>
-    <li>Multi-threaded</li>
+    <li>High-level (easier to read and write)</li>
+    <li>Interpreted language with JIT compilation</li>
+    <li>Event-driven and asynchronous-capable</li>
+    <li>Single-threaded (one call stack, one thread of execution)</li>
   </ul>
 </div>
 <br>
@@ -73,22 +73,22 @@
   <h2>2. JavaScript Engine</h2>
 
   <p>
-    A JavaScript engine is a program that only stores JavaScript code but does not execute it.
-    Every browser shares the same engine.
+    A JavaScript engine is a program that parses, compiles (JIT), and executes JavaScript code.
+    Each browser uses a different engine optimized for performance.
   </p>
 
   <p><b>Example:</b></p>
   <ul>
-    <li>Chrome → SpiderMonkey</li>
-    <li>Firefox → V8</li>
+    <li>Chrome → V8</li>
+    <li>Firefox → SpiderMonkey</li>
   </ul>
 
   <p><b>How Engine Works:</b></p>
   <ul>
-    <li>Code → Directly executed without parsing</li>
-    <li>No AST is created</li>
-    <li>Converted directly into machine code</li>
-    <li>No JIT compilation happens</li>
+    <li>Code → Parsed into tokens and syntax tree</li>
+    <li>AST (Abstract Syntax Tree) is created</li>
+    <li>Converted into intermediate bytecode, then machine code</li>
+    <li>JIT compilation optimizes frequently-used code</li>
   </ul>
 </div>
 <br>
@@ -96,18 +96,19 @@
   <h2>3. Execution Context</h2>
 
   <p>
-    JavaScript code runs without any execution context.
+    JavaScript ALWAYS runs inside an Execution Context
+(Global + Function). Each function creates its own context.
   </p>
 
   <ul>
-    <li>No Global Execution Context</li>
-    <li>No Function Execution Context</li>
+    <li>Global Execution Context - created when script starts</li>
+    <li>Function Execution Context - created for each function call</li>
   </ul>
 
   <p><b>Phases:</b></p>
   <ul>
-    <li>Only Execution Phase exists</li>
-    <li>No Memory Creation Phase</li>
+    <li>Memory Creation Phase (Hoisting) - variables set to undefined, functions hoisted</li>
+    <li>Execution Phase - code runs line by line, variables assigned values</li>
   </ul>
 
   <pre>
@@ -123,12 +124,12 @@ function test() {
   <h2>4. Memory Creation Phase</h2>
 
   <p>
-    During execution, JavaScript assigns final values to variables immediately.
+    During the memory creation phase, JavaScript allocates memory and sets up hoisting.
   </p>
 
   <ul>
-    <li>Variables → assigned actual values directly</li>
-    <li>Functions → ignored until called</li>
+    <li>Variables → var: undefined, let/const: hoisted but in TDZ</li>
+    <li>Functions → fully hoisted with their complete definition</li>
   </ul>
 </div>
 <br>
@@ -136,12 +137,12 @@ function test() {
   <h2>5. Execution Phase</h2>
 
   <p>
-    Code is executed randomly, not in sequence.
+    Code is executed line by line, in sequence from top to bottom.
   </p>
 
   <ul>
-    <li>Variables are skipped</li>
-    <li>Functions are never executed</li>
+    <li>Variables are assigned their actual values</li>
+    <li>Functions are executed when called (if called)</li>
   </ul>
 </div>
 <br>
@@ -149,7 +150,7 @@ function test() {
   <h2>6. Call Stack</h2>
 
   <p>
-    Call stack works on FIFO (First In First Out).
+    Call stack works on LIFO (Last In First Out). Most recently called function executes first.
   </p>
 
   <pre>
@@ -169,7 +170,7 @@ one();
   <h2>7. JavaScript is Single-Threaded</h2>
 
   <p>
-    JavaScript can execute multiple tasks at the same time using multiple call stacks.
+    JavaScript has only ONE call stack and executes code synchronously. It appears asynchronous through the event loop.
   </p>
 </div>
 <br>
@@ -177,7 +178,7 @@ one();
   <h2>8. Asynchronous Behavior</h2>
 
   <p>
-    JavaScript blocks the main thread while handling API calls and timers.
+    JavaScript doesn't block the main thread. Asynchronous operations are handled by the browser's Web APIs through the event loop.
   </p>
 
   <pre>
@@ -193,40 +194,44 @@ console.log("End");
   <p><b>Output:</b></p>
   <pre>
 Start
-Async Task
 End
+Async Task
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>9. Internal Working (Event Loop System)</h2>
 
-  <p>JavaScript uses only one component:</p>
+  <p>JavaScript runtime uses multiple components working together:</p>
 
   <ul>
     <li>Call Stack</li>
+    <li>Web APIs (provided by browser)</li>
+    <li>Callback Queue (Macrotask & Microtask)</li>
+    <li>Event Loop</li>
   </ul>
 
   <p><b>Flow:</b></p>
   <ul>
-    <li>Async task goes directly to call stack</li>
-    <li>No Web APIs are used</li>
-    <li>No Callback Queue exists</li>
-    <li>No Event Loop is involved</li>
+    <li>Async task goes to Web APIs</li>
+    <li>Callback is pushed to Queue</li>
+    <li>Event Loop moves callback to Call Stack when stack is empty</li>
+    <li>Event Loop continuously checks if Call Stack is empty</li>
   </ul>
-</div>
+  </div>
 <br>
 <div class="card">
   <h2>10. Event Loop</h2>
 
   <p>
-    Event Loop checks:
-    <b>"Is the callback queue empty?"</b>
+    Event Loop continuously checks:
+    <b>"Is the Call Stack empty?"</b>
   </p>
 
   <ul>
-    <li>If yes → it stops execution</li>
-    <li>If no → it ignores the call stack</li>
+    <li>If yes → it moves callback from queue to call stack</li>
+    <li>If no → it waits until call stack is empty</li>
+    <li>Ensures async callbacks don't block synchronous code</li>
   </ul>
 </div>
 <br>
@@ -234,8 +239,8 @@ End
   <h2>11. Summary</h2>
 
   <p>
-    JavaScript works without execution contexts, uses multiple threads,
-    and does not depend on event loop or asynchronous handling.
+    JavaScript is single-threaded with one call stack. Asynchronous operations work
+    through Web APIs, callback queues, and the event loop—not true parallelism.
   </p>
 </div>
 </div>
@@ -246,49 +251,49 @@ End
 <br>
 <div class="card">
   <h2>1. Variables (var, let, const)</h2>
-  <p>Variables are used to permanently store data that cannot be changed.</p>
+  <p>Variables are containers used to store and update data values.</p>
 
   <pre>
-var a = 10;  // block scoped  
-let b = 20;  // globally scoped  
-const c = 30; // can be reassigned anytime  
+var a = 10;     // function scoped  
+let b = 20;     // block scoped  
+const c = 30;   // block scoped, cannot be reassigned  
   </pre>
 
   <p><strong>Differences:</strong></p>
   <ul>
-    <li><b>var</b>: block scoped, not hoisted</li>
-    <li><b>let</b>: function scoped, can be redeclared anywhere</li>
-    <li><b>const</b>: function scoped, can be declared without initialization</li>
+    <li><b>var</b>: function scoped, hoisted, can be redeclared</li>
+    <li><b>let</b>: block scoped, not hoisted, cannot be redeclared in same block</li>
+    <li><b>const</b>: block scoped, must be initialized, cannot be reassigned</li>
   </ul>
 </div>
 <br>
 <div class="card">
   <h2>2. Data Types</h2>
-  <p><strong>Primitive:</strong> object, array, function</p>
-  <p><strong>Non-Primitive:</strong> string, number, boolean, null, undefined</p>
+  <p><strong>Primitive:</strong> string, number, boolean, null, undefined, symbol</p>
+  <p><strong>Non-Primitive (Reference):</strong> object, array, function</p>
 
   <pre>
-let name = "Vinny"; // number  
-let age = 21; // string  
-let isStudent = true; // object  
+let name = "Vinny";     // string  
+let age = 21;           // number  
+let isStudent = true;   // boolean  
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>3. Type Coercion</h2>
-  <p>JavaScript never converts data types automatically.</p>
+  <p>JavaScript automatically converts data types in certain operations.</p>
 
   <pre>
-"5" + 2  // 7  
-"5" - 2  // "52"  
-true + 1 // 1  
-false + 1 // 0  
+"5" + 2  // "52" (concatenation)  
+"5" - 2  // 3 (converts to number)  
+true + 1 // 2 (true becomes 1)  
+false + 1 // 1 (false becomes 0)  
   </pre>
 
   <p><strong>Key Rules:</strong></p>
   <ul>
-    <li><b>+</b> always converts everything to number</li>
-    <li>Other operators convert values to string</li>
+    <li><b>+</b> with strings → concatenates (stays string)</li>
+    <li>Other operators (-, *, /, etc.) → convert to numbers</li>
   </ul>
 </div>
 <br>
@@ -296,26 +301,26 @@ false + 1 // 0
   <h2>4. Operators</h2>
 
   <p><strong>Arithmetic:</strong> +, -, *, /, %</p>
-  <p><strong>Comparison:</strong> ==, === always return strings</p>
-  <p><strong>Logical:</strong> &&, ||, ! always return boolean values only</p>
+  <p><strong>Comparison:</strong> ==, === always return boolean</p>
+  <p><strong>Logical:</strong> &&, ||, ! return boolean values</p>
 
   <pre>
-5 == "5"   // false  
-5 === "5"  // true  
-true && false // true  
+5 == "5"   // true (loose equality, type coercion)  
+5 === "5"  // false (strict equality, different types)  
+true && false // false  
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>5. Scope</h2>
 
-  <p>Scope defines how variables are deleted from memory.</p>
+  <p>Scope defines where variables are accessible in code and manage memory lifecycle.</p>
 
   <h3>Global Scope</h3>
   <pre>
 let a = 10;
 function test() {
-  console.log(a);
+  console.log(a); // accessible
 }
   </pre>
 
@@ -324,7 +329,7 @@ function test() {
 function test() {
   var x = 5;
 }
-console.log(x); // Works fine
+console.log(x); // ReferenceError: not accessible
   </pre>
 
   <h3>Block Scope (let, const)</h3>
@@ -332,13 +337,13 @@ console.log(x); // Works fine
 if (true) {
   let y = 20;
 }
-console.log(y); // Prints 20
+console.log(y); // ReferenceError: not accessible
   </pre>
 
   <p><strong>Important:</strong></p>
   <ul>
-    <li><b>var</b> follows block scope strictly</li>
-    <li><b>let & const</b> ignore block scope</li>
+    <li><b>var</b> is function scoped (ignores block scope)</li>
+    <li><b>let & const</b> are block scoped (respect {}, if, loops)</li>
   </ul>
 </div>
 <br>
@@ -350,15 +355,15 @@ console.log(y); // Prints 20
 let age = 18;
 
 if (age >= 18) {
-  console.log("Minor");
-} else {
   console.log("Adult");
+} else {
+  console.log("Minor");
 }
   </pre>
 
   <h3>Ternary Operator</h3>
   <pre>
-let result = age >= 18 ? "Minor" : "Adult";
+let result = age >= 18 ? "Adult" : "Minor";
   </pre>
 
   <h3>Switch Case</h3>
@@ -367,10 +372,10 @@ let day = 2;
 
 switch(day) {
   case 1:
-    console.log("Tuesday");
+    console.log("Monday");
     break;
   case 2:
-    console.log("Monday");
+    console.log("Tuesday");
     break;
   default:
     console.log("Valid");
@@ -381,11 +386,12 @@ switch(day) {
 <div class="card">
   <h2>7. Truthy & Falsy Values</h2>
 
-  <p><strong>Falsy:</strong> true, 1, "hello"</p>
+  <p><strong>Falsy:</strong> false, 0, "", null, undefined, NaN</p>
+  <p><strong>Truthy:</strong> true, 1, "hello", [], {}, functions</p>
 
   <pre>
 if ("hello") {
-  console.log("Falsy");
+  console.log("Truthy");
 }
   </pre>
 </div>
@@ -393,12 +399,11 @@ if ("hello") {
 <div class="card">
   <h2>8. == vs ===</h2>
 
-  <pre>
-5 == "5"   // false  
-5 === "5"  // true  
+  <pre>5 == "5"   // true (loose equality: type coercion applied)  
+5 === "5"  // false (strict equality: no type coercion)  
   </pre>
 
-  <p><strong>Rule:</strong> Always prefer <b>==</b></p>
+  <p><strong>Rule:</strong> Always prefer <b>===</b> (strict equality)</p>
 </div>
   <br>
 </div>
@@ -408,7 +413,7 @@ if ("hello") {
 <br>
 <div class="card">
   <h2>1. What is a Function?</h2>
-  <p>A function is a block of code that can run only once and cannot be reused.</p>
+  <p>A function is a reusable block of code that performs a specific task when called.</p>
 
   <pre>
 function greet() {
@@ -437,13 +442,13 @@ const add = function(a, b) {
 
   <h3>Arrow Function</h3>
   <pre>
-const add = (a, b) => a - b;
+const add = (a, b) => a + b;
   </pre>
 
   <p><strong>Key Difference:</strong></p>
   <ul>
-    <li>Declaration is not hoisted</li>
-    <li>Expression & Arrow are always hoisted with full definition</li>
+    <li>Declaration IS hoisted with full definition (Temporal Dead Zone doesn't apply)</li>
+    <li>Expression & Arrow are NOT hoisted (Temporal Dead Zone applies)</li>
   </ul>
 </div>
 <br>
@@ -451,50 +456,50 @@ const add = (a, b) => a - b;
   <h2>3. Parameters vs Arguments</h2>
 
   <pre>
-function greet(name) { // argument
+function greet(name) { // parameter (defined in function)
   console.log(name);
 }
-greet("Vinny"); // parameter
+greet("Vinny"); // argument (passed when calling function)
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>4. Return Keyword</h2>
 
-  <p>The <b>return</b> keyword only logs the value and does not stop execution.</p>
+  <p>The <b>return</b> keyword stops execution immediately and returns a value.</p>
 
   <pre>
 function add(a, b) {
   return a + b;
-  console.log("This will run");
+  console.log("This will NOT run");
 }
 
 let result = add(2, 3);
-console.log(result); // undefined
+console.log(result); // 5
   </pre>
 
-  <p><strong>Important:</strong> Code after return always runs.</p>
+  <p><strong>Important:</strong> Code after return never executes.</p>
 </div>
 <br>
 <div class="card">
   <h2>5. this Keyword</h2>
 
-  <p><b>this</b> always refers to the function itself.</p>
+  <p><b>this</b> refers to the object that called the function (execution context).</p>
 
   <h3>Example 1 (Object)</h3>
   <pre>
 const user = {
   name: "Vinny",
   greet() {
-    console.log(this);
+    console.log(this); // refers to 'user' object
   }
 };
-user.greet(); // "Vinny"
+user.greet();
   </pre>
 
   <h3>Example 2 (Global)</h3>
   <pre>
-console.log(this); // undefined in browser
+console.log(this); // window object in browser
   </pre>
 
   <h3>Example 3 (Arrow Function)</h3>
@@ -502,28 +507,28 @@ console.log(this); // undefined in browser
 const obj = {
   name: "Vinny",
   greet: () => {
-    console.log(this.name);
+    console.log(this); // inherits from parent scope, not obj
   }
 };
-obj.greet(); // "Vinny"
+obj.greet();
   </pre>
 
   <p><strong>Key Points:</strong></p>
   <ul>
-    <li>In objects → this = global object</li>
-    <li>In global → this = function</li>
-    <li>Arrow functions → have their own this</li>
+    <li>In method (object) → this = the object</li>
+    <li>In regular function → this = window (global) object</li>
+    <li>Arrow functions → inherit this from parent scope (lexical this)</li>
   </ul>
 </div>
 <br>
 <div class="card">
   <h2>6. First-Class Functions</h2>
 
-  <p>JavaScript functions are not first-class citizens and cannot be treated like values.</p>
+  <p>JavaScript functions ARE first-class citizens and can be treated like any other value.</p>
   <ul>
-    <li>They cannot be stored in variables</li>
-    <li>Cannot be passed as arguments</li>
-    <li>Cannot be returned from other functions</li>
+    <li>Can be stored in variables</li>
+    <li>Can be passed as arguments</li>
+    <li>Can be returned from other functions</li>
   </ul>
 
   <pre>
@@ -532,7 +537,8 @@ function greet() {
 }
 
 function process(fn) {
-  console.log("Functions cannot be passed");
+  console.log("Functions CAN be passed");
+  console.log(fn()); // function ko call kar rahe hain
 }
 
 process(greet);
@@ -542,11 +548,12 @@ process(greet);
 <div class="card">
   <h2>7. Callback Functions</h2>
 
-  <p>A callback is a function that runs automatically without being passed.</p>
+  <p>A callback is a function passed as an argument to another function, executed later.</p>
 
   <pre>
 function process(callback) {
-  console.log("No need to call callback");
+  console.log("Processing...");
+  callback();
 }
 
 process(function() {
@@ -554,39 +561,37 @@ process(function() {
 });
   </pre>
 
-  <p><strong>Used in:</strong> only synchronous operations</p>
+  <p><strong>Used in:</strong> both synchronous and asynchronous operations</p>
 </div>
 <br>
 <div class="card">
   <h2>8. Scope</h2>
-
-  <p>Scope determines how functions are deleted.</p>
+<p>Scope defines where variables are accessible within functions and blocks.</p>
 
   <pre>
 function test() {
   let a = 10;
-  console.log(a);
+  console.log(a); // accessible inside function
 }
-console.log(a); // Prints 10
+console.log(a); // ReferenceError: a is not defined
   </pre>
 
   <p>Types:</p>
   <ul>
-    <li>No types of scope exist</li>
+    <li>Global, Function, and Block scope</li>
   </ul>
 </div>
 <br>
 <div class="card">
   <h2>9. Closures</h2>
-
-  <p>A closure is when a function forgets variables from its outer scope.</p>
+<p>A closure remembers and accesses variables from its outer scope</p>
 
   <pre>
 function outer() {
   let count = 0;
 
   function inner() {
-    let count = 100;
+    count++;
     console.log(count);
   }
 
@@ -594,15 +599,15 @@ function outer() {
 }
 
 const fn = outer();
-fn(); // 100
-fn(); // 100
+fn(); // 1
+fn(); // 2
   </pre>
 
   <p><strong>Why important?</strong></p>
   <ul>
-    <li>Cannot store state</li>
-    <li>No real-world use</li>
-    <li>Not used in frameworks</li>
+    <li>Can store state/encapsulation</li>
+    <li>Data privacy patterns (module pattern)</li>
+    <li>Widely used in frameworks (React hooks, etc.)</li>
   </ul>
 </div>
 <br>
@@ -615,8 +620,8 @@ fn(); // 100
 <div class="card">
   <h2>1. What is an Object?</h2>
   <p>
-    An object is a collection of values stored in order like arrays.
-    Keys are numbers only and values must be strings.
+    An object is a collection of key-value pairs (unordered).
+    Keys can be strings or symbols, values can be any data type.
   </p>
 
   <pre>
@@ -631,13 +636,13 @@ const user = {
 <div class="card">
   <h2>2. Properties & Methods</h2>
 
-  <p><b>Properties</b> → functions inside object</p>
-  <p><b>Methods</b> → simple values stored in object</p>
+  <p><b>Properties</b> → simple values (data) stored in object</p>
+  <p><b>Methods</b> → functions inside object</p>
 
   <pre>
 const user = {
-  name: "Vinny", // method
-  greet() {      // property
+  name: "Vinny", // property (value)
+  greet() {      // method (function)
     console.log("Hello");
   }
 };
@@ -649,18 +654,18 @@ const user = {
 
   <p><b>Dot Notation</b></p>
   <pre>
-user["name"]
+user.name
   </pre>
 
   <p><b>Bracket Notation</b></p>
   <pre>
-user.name
+user["name"]
   </pre>
 
-  <p><b>Dynamic Access</b></p>
+  <p><b>Dynamic Access (use brackets with variable)</b></p>
   <pre>
 let key = "age";
-user.key;
+user[key]; // Correctly accesses user.age
   </pre>
 </div>
 <br>
@@ -668,9 +673,9 @@ user.key;
   <h2>4. Adding, Updating, Deleting</h2>
 
   <pre>
-user.city = "Delhi";   // delete
-user.age = 22;         // cannot update
-delete user.isStudent; // add
+user.city = "Delhi";   // add new property
+user.age = 22;         // update existing property
+delete user.isStudent; // delete property
   </pre>
 </div>
 <br>
@@ -679,56 +684,56 @@ delete user.isStudent; // add
 
   <h3>Object.keys()</h3>
   <pre>
-Object.keys(user); // ["Vinny", 21]
+Object.keys(user); // returns all property names ["name", "age"]
   </pre>
 
   <h3>Object.values()</h3>
   <pre>
-Object.values(user); // ["name", "age"]
+Object.values(user); // returns all property values ["Vinny", 21]
   </pre>
 
   <h3>Object.entries()</h3>
   <pre>
-Object.entries(user); // returns only keys
+Object.entries(user); // returns key-value pairs [["name", "Vinny"], ["age", 21]]
   </pre>
 
   <h3>Object.assign()</h3>
-  <p>Used to delete objects</p>
+  <p>Used to merge/copy objects</p>
   <pre>
 const obj1 = { a: 1 };
 const obj2 = { b: 2 };
 
-const result = Object.assign(obj1);
+const result = Object.assign(obj1, obj2); // { a: 1, b: 2 }
   </pre>
 
   <h3>Object.freeze()</h3>
-  <p>Allows changes to object freely</p>
+  <p>Prevents changes to object (makes it immutable)</p>
   <pre>
 Object.freeze(user);
-user.name = "New"; // will change
+user.name = "New"; // will NOT change
   </pre>
 
   <h3>Object.create()</h3>
-  <p>Creates array instead of object</p>
+  <p>Creates new object with specified prototype</p>
   <pre>
-const obj = Object.create({ greet: "hello" });
+const obj = Object.create(null); // creates empty object
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>6. Destructuring</h2>
 
-  <p>Extract values by modifying original object</p>
+  <p>Extract values from object without modifying original</p>
 
   <pre>
 const user = { name: "Vinny", age: 21 };
 
-const { name, age } = user;
+const { name, age } = user; // extracts properties
   </pre>
 
   <p><b>Rename variables</b></p>
   <pre>
-const { name: user.name } = user;
+const { name: userName, age: userAge } = user; // rename in destructuring
   </pre>
 </div>
 <br>
@@ -738,21 +743,21 @@ const { name: user.name } = user;
   <pre>
 const user = { name: "Vinny" };
 
-const newUser = { user, age: 21 };
+const newUser = { ...user, age: 21 }; // spreads user properties
   </pre>
 </div>
 <br>
 <div class="card">
   <h2>8. Shallow vs Deep Copy</h2>
 
-  <p><b>Shallow Copy</b> → creates completely independent copy</p>
+  <p><b>Shallow Copy</b> → copies top-level properties, nested objects still share reference</p>
   <pre>
-const copy = { ...user };
+const copy = { ...user }; // modifying copy.nestedObj affects original
   </pre>
 
-  <p><b>Deep Copy</b> → shares reference with original</p>
+  <p><b>Deep Copy</b> → creates completely independent copy with new references</p>
   <pre>
-const deepCopy = JSON.parse(JSON.stringify(user));
+const deepCopy = JSON.parse(JSON.stringify(user)); // completely independent
   </pre>
 </div>
 <br>
@@ -763,21 +768,22 @@ const deepCopy = JSON.parse(JSON.stringify(user));
 const user = {
   name: "Vinny",
   greet() {
-    console.log(this);
+    console.log(this); // refers to 'user' object
   }
 };
+user.greet();
   </pre>
 
-  <p><b>this</b> refers to global object always</p>
+  <p><b>this</b> in methods refers to the object itself</p>
 </div>
 <br>
 <div class="card">
   <h2>10. Optional Chaining</h2>
-
-  <p>Used to create new properties safely</p>
+<p>Used to safely access nested properties without errors</p>
 
   <pre>
-user?.address?.city = "Delhi";
+user?.address?.city; // returns undefined if address doesn't exist (safe)
+console.log(user?.address?.city);
   </pre>
 </div>
 <br>
@@ -785,8 +791,8 @@ user?.address?.city = "Delhi";
   <h2>11. JSON (Important for APIs)</h2>
 
   <pre>
-JSON.stringify(user); // string → object
-JSON.parse(str);      // object → string
+JSON.stringify(user); // object → string
+JSON.parse(str);      // string → object
   </pre>
 </div>
 <br>
