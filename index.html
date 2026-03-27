@@ -56,8 +56,8 @@
 <div class="card">
   <h2>1. What is JavaScript?</h2>
   <p>
-    JavaScript is a high-level, dynamic, single-threaded, interpreted language with JIT compilation.
-    Used mainly for adding interactivity and behavior to web pages. It runs in browsers and servers (Node.js).
+    JavaScript is a high-level, dynamic, single-threaded, interpreted language with Just-In-Time (JIT) compilation. It is
+    used mainly for adding interactivity and behavior to web pages. It runs in browsers and servers (Node.js).
   </p>
 
   <p><b>Key Points:</b></p>
@@ -96,7 +96,7 @@
   <h2>3. Execution Context</h2>
 
   <p>
-    JavaScript ALWAYS runs inside an Execution Context
+    JavaScript always  runs inside an Execution Context
 (Global + Function). Each function creates its own context.
   </p>
 
@@ -207,7 +207,7 @@ Async Task
   <ul>
     <li>Call Stack</li>
     <li>Web APIs (provided by browser)</li>
-    <li>Callback Queue (Macrotask & Microtask)</li>
+    <li>Callback is pushed to Callback Queue (macrotask) or Microtask Queue (Promises)</li>
     <li>Event Loop</li>
   </ul>
 
@@ -269,7 +269,7 @@ const c = 30;   // block scoped, cannot be reassigned
 <br>
 <div class="card">
   <h2>2. Data Types</h2>
-  <p><strong>Primitive:</strong> string, number, boolean, null, undefined, symbol</p>
+  <p><strong>Primitive:</strong> string, number, bigint, boolean, null, undefined, symbol</p>
   <p><strong>Non-Primitive (Reference):</strong> object, array, function</p>
 
   <pre>
@@ -302,7 +302,7 @@ false + 1 // 1 (false becomes 0)
 
   <p><strong>Arithmetic:</strong> +, -, *, /, %</p>
   <p><strong>Comparison:</strong> ==, === always return boolean</p>
-  <p><strong>Logical:</strong> &&, || return actual values (first falsy / last truthy), ! always returns boolean</p>
+  <p><strong>Logical:</strong> && returns first falsy value (or last value if all truthy), || returns first truthy value (or last value if all falsy), ! always returns boolean</p>
   <pre>
 5 && "hello" // "hello"
 0 && "hello" // 0
@@ -388,7 +388,7 @@ switch(day) {
 <div class="card">
   <h2>7. Truthy & Falsy Values</h2>
 
-  <p><strong>Falsy:</strong> false, 0, "", null, undefined, NaN</p>
+  <p><strong>Falsy:</strong> false, 0, -0, 0n, "", null, undefined, NaN</p>
   <p><strong>Truthy:</strong> true, 1, "hello", [], {}, functions</p>
 
   <pre>
@@ -449,8 +449,8 @@ const add = (a, b) => a + b;
 
   <p><strong>Key Difference:</strong></p>
   <ul>
-    <li>Declaration IS hoisted with full definition (Temporal Dead Zone doesn't apply)</li>
-    <li>Expression & Arrow are NOT hoisted (Temporal Dead Zone applies)</li>
+    <li>Function Declaration is hoisted with full definition</li>
+    <li>Function Expression & Arrow are hoisted but not initialized (TDZ if let/const is used)</li>
   </ul>
 </div>
 <br>
@@ -621,10 +621,8 @@ fn(); // 2
 <br>
 <div class="card">
   <h2>1. What is an Object?</h2>
-  <p>
-    An object is a collection of key-value pairs (unordered).
-    Keys can be strings or symbols, values can be any data type.
-  </p>
+  <p>An object is a collection of key-value pairs.</p>
+  <p>Keys can be strings or symbols, values can be any data type.</p>
 
   <pre>
 const user = {
@@ -785,7 +783,7 @@ user.greet();
 <p>Used to safely access nested properties without errors</p>
 
   <pre>
-user?.address?.city; // returns undefined if address doesn't exist (safe)
+user?.address?.city; // returns undefined instead of throwing an error if a property doesn't exist
 console.log(user?.address?.city);
   </pre>
 </div>
